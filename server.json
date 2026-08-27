@@ -1,0 +1,45 @@
+{
+  "host": "127.0.0.1",
+  "port": 8080,
+  "backend": "cuda",
+  "device": 0,
+  "threads": 8,
+  "models": [
+    {
+      "id": "omnivoice_q8_0",
+      "family": "omnivoice",
+      "path": "tools/models/OmniVoice-GGUF/omnivoice-q8_0.gguf",
+      "task": "tts",
+      "mode": "streaming",
+      "load_options": {
+        "language": "english"
+      },
+      "session_options": {
+        "language": "english",
+        "omnivoice.perf_mode": "flash_attention",
+        "omnivoice.generator_weight_type": "f16",
+        "text_chunk_size": 10,
+        "num_inference_steps": 16
+      },
+
+      "voice_presets": {
+        "default": {
+          "voice_ref": "C:/Users/DARYL/Documents/GitHub/DUMY/src/dumy/voices/jarvis.wav",
+          "reference_text": "Allow me to introduce myself. I am Jarvis, a virtual artificial intelligence. Importing all preferences from home interface. Systems are now fully operational"
+        }
+      }
+    },
+    {
+      "id": "qwen3_asr_0_6b_q8_0",
+      "family": "qwen3_asr",
+      "path": "tools/models/Qwen3-ASR-0.6B-GGUF/qwen3-asr-0.6b-q8_0.gguf",
+      "task": "asr",
+      "mode": "streaming",
+      "session_options": {
+        "qwen3_asr.weight_type": "q8_0",
+        "qwen3_forced_aligner.weight_type": "q8_0",
+        "qwen3_tts.mem_saver": true
+      }
+    }
+  ]
+}
