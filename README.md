@@ -6,8 +6,13 @@
 
 Tired of juggling a dozen Conda environments, hundreds of Python packages, and dependency conflicts just to try a few audio models? audio.cpp gives those paths a shared native runtime instead. Runs on Windows, Linux, and macOS, with support for NVIDIA, AMD, Apple Silicon, and CPU-only machines.
 
+Huggingface main repo: https://huggingface.co/audio-cpp/audio.cpp-gguf
+
+ModelScope repo mirror: https://www.modelscope.cn/models/HereIsMark/audio.cpp-gguf
+
 > [!IMPORTANT]
-> **2026-08-18**: MiniMax Music3 has been merged from the `preview` branch into `main`. Please use the version from `main` going forward.
+>
+> **Arena UI:** The new Arena tab makes it easier to compare local models side by side for TTS, voice conversion, and ASR. Use one shared input, queue multiple models or GGUF variants, then review outputs with metrics!
 >
 > **CUDA performance headline:** multiple TTS paths already run **1.8x to up to 8x faster than their Python reference paths** while cutting end-to-end latency by **45%-85%**.
 >
@@ -44,23 +49,15 @@ audio.cpp would not be moving this quickly without generous contributors bringin
 ## News
 
 > [!IMPORTANT]
-> **2026-08-18 - Release 0.6.1:** This update adds MiniMax Music 3 docs, DotTTS Edit docs, ACE-Step 1.5 XL notes, and WebUI/Docker launch guidance, bringing audio.cpp to **50** total model families and **70+** model variants.
+> **2026-09-04 - Release 0.7.2:** This release adds BreezeTTS 2, CosyVoice3, Chatterbox Turbo TTS, Audio8 TTS, and Audio8 ASR, plus the new multipart audio alignment endpoint.
+>
+> **2026-08-26 - Release 0.7:** This release adds MiniMax Music 3, MagpieTTS, PersonaPlex, MeanVC2, AudioSR, ControlFoley, FireRedTTS3, FireRedAudio, MiDashengLM-Gen, F5-TTS/Habibi, Granite Speech 5.0 TurboCTC, MMS Forced Aligner, and MOSS-VoiceGenerator, plus DotTTS Edit and ACE-Step 1.5 XL variants, bringing audio.cpp to **62** total model families and **85+** model variants! It also introduces the new Arena UI for side-by-side TTS, voice-conversion, and ASR comparison with shared inputs, queued runs, metrics, and result sorting.
 >
 > **2026-08-13 - Release 0.6:** This release adds **5** new model families - DotTTS, NeuTTS, MuScriptor, MiniMax-H3, and SenseVoice - bringing audio.cpp to **49** total model families and **70+** model variants, alongside the new native WebUI from [@mirek190](https://github.com/mirek190), expanded GGUF packaging, and more shared framework runtime pieces.
 >
-> **2026-07-31 - Release 0.5:** audio.cpp grows to **44 model families** with **9 new additions**: DramaBox, Confucius4-TTS, RVC, BS-RoFormer, GLM-TTS, Kroko ASR, Parakeet-TDT, Inflect v2, and Fun-ASR-Nano.
->
-> **HIP/ROCm support:** Platform coverage also takes a big step forward! Early HIP/ROCm support lands for AMD GPUs thanks to [@IIIIIllllIIIIIlllll](https://github.com/IIIIIllllIIIIIlllll), with Nix ROCm/HIP build support from [@francescobozzo](https://github.com/francescobozzo).
->
-> **Metal performance boost:** Thanks to [@liuzl](https://github.com/liuzl), Metal ops were optimized, making tested VoxCPM2 end-to-end runs up to **2.56x faster** on Apple Silicon. Many models should benefit from these optimizations.
->
-> This release is a major GGUF-first usability pass. The WebUI now uses model-spec package links for downloads, prefers standalone GGUF packages when available, and handles more models directly from the normal UI flow. New schema-v1 specs make model options, packages, metadata, and UI-facing behavior much easier to keep in sync.
->
-> **2026-07-23 - Release 0.4:** audio.cpp expanded to **35 model families**, adding Higgs Audio v3 TTS 4B, Fish Audio S2 Pro, Voxtral Realtime ASR, community OuteTTS and VieNeu-TTS, broader GGUF/package-spec support, reusable framework improvements, and the integrated WebUI thanks to [@kigner](https://github.com/kigner) and [@patrickjchen](https://github.com/patrickjchen).
->
-> **2026-07-14 - Release 0.3:** This release added IndexTTS2, Irodori-TTS, MOSS-TTS-Nano, MOSS-TTS-Local, Supertonic 3, Chatterbox voice conversion, and the first broad GGUF loading/conversion wave. Thanks to [@justinjohn0306](https://github.com/justinjohn0306) for MOSS-TTS-Local and [@mirek190](https://github.com/mirek190) for driving GGUF forward.
+> **2026-07-31 - Release 0.5:** audio.cpp reaches **44 model families** with 9 new additions, early HIP/ROCm support for AMD GPUs, Nix ROCm/HIP build support, Metal optimizations with tested VoxCPM2 runs up to **2.56x faster** on Apple Silicon, and a major GGUF-first WebUI/package-spec usability pass.
 
-**2026-06-25 to 2026-07-08:** audio.cpp grew from the first released model wave into broad TTS, ASR, music generation, source separation, VAD, diarization, codec, and voice-conversion coverage, with VibeVoice 1.5B/7B, LoRA adapter loading, initial streaming support, and major CUDA Conv1DTransp speedups.
+**2026-06-25 to 2026-07-23 (release 0.1 to 0.4):** audio.cpp grew from the first released model wave into broad TTS, ASR, music generation, source separation, VAD, diarization, codec, and voice-conversion coverage, with VibeVoice 1.5B/7B, LoRA adapter loading, initial streaming support, and major CUDA Conv1DTransp speedups.
 
 ## Supported Models
 
@@ -72,11 +69,15 @@ Runtime tags summarize the supported loading paths. GGUF package precision varie
 
 | Family | Task | Lang | Variants | Runtime |
 |---|---|---|---|---|
+| **breeze_tts** | TTS, Clone, Design | zh, en | BreezeTTS 2 instruction-conditioned TTS and prompt-audio voice cloning | GGUF BF16/Q8, Stream |
 | **chatterbox** | TTS, Clone, VC| ar, da, de, el, en, es, fi, fr, hi, it, ko, ms, nl, no, pl, pt, sv, sw, tr | Chatterbox with 0.5B backbone | GGUF 16/Q8 |
 | **confucius4_tts** | Clone | zh, en, ja, ko, de, fr, es, id, it, th, pt, ru, ms, vi | Confucius4-TTS multilingual voice cloning | GGUF F32, Stream |
+| **cosyvoice3** | TTS, Clone | zh, en, ja, ko, de, es, fr, it, ru, yue | Fun-CosyVoice3 zero-shot, cross-lingual, and instruction-conditioned TTS | GGUF F32/Q8 |
 | **dots_tts** | TTS, Clone, Edit, Ctrl | multilingual | DotTTS SOAR, MeanFlow, and Edit | GGUF 16/Q8, Stream |
 | **dramabox** | TTS, Clone | en | DramaBox expressive TTS and voice cloning | GGUF Q8 |
 | **fish_audio** | TTS, Clone, Ctrl | auto, en, zh | Fish Audio S2 Pro | GGUF 16/Q8 |
+| **firered_audio** | ASR, TTS, Clone, Design, Ctrl | zh, en | FireRedAudio multimodal speech/audio model with ASR, understanding, cloning, design, and edit paths | GGUF original/Q8 |
+| **fireredtts3** | TTS, Clone, Design, Ctrl | 24 langs + 21 zh dialects | FireRedTTS3 Base and Instruct packages for voice cloning, design, semantic edit, and acoustic edit | GGUF original/Q8 |
 | **higgs_audio_tts** | TTS, Clone, Ctrl | auto | Higgs Audio v3 TTS 4B | GGUF 16/Q8 |
 | **index_tts2** | TTS, Clone, Ctrl | zh, en, ja, es, ar | IndexTTS-2, IndexTTS-2.5 (variant) | GGUF 16/Q8 |
 | **irodori_tts** | TTS, Clone, Design, Ctrl | ja | Irodori-TTS-v4-Small, Irodori-TTS-500M-v3, Irodori-TTS-600M-v3-VoiceDesign | GGUF 16/Q8 |
@@ -114,7 +115,9 @@ Runtime tags summarize the supported loading paths. GGUF package precision varie
 
 | Family | Task | Lang | Variants | Runtime |
 |---|---|---|---|---|
+| **audiosr** | S2S | lang agnostic | AudioSR Basic audio super-resolution package | GGUF F32 |
 | **bs_roformer** | Sep | lang agnostic | BS-RoFormer vocal separation checkpoints | GGUF Q8 |
+| **controlfoley** | SFX | auto | ControlFoley 44 kHz multimodal Foley generation from text, video, and reference audio conditioning | GGUF F32/Q8 |
 | **htdemucs** | Sep | lang agnostic | HTDemucs, HTDemucs_ft | GGUF 16/Q8 |
 | **meanvc2** | VC | lang agnostic | MeanVC2 120 ms/40 ms zero-shot voice conversion | GGUF F32/Q4, Stream |
 | **mel_band_roformer** | Sep | lang agnostic | Mel-Band RoFormer MLX vocal separation variants | GGUF 16/Q8 |
@@ -129,6 +132,7 @@ Runtime tags summarize the supported loading paths. GGUF package precision varie
 |---|---|---|---|---|
 | **ace_step** | Music, Edit | 50+ langs | ACE-Step 1.5 Turbo/Base and XL Turbo/SFT with acestep-5Hz-lm-1.7B | GGUF 16 |
 | **heartmula** | Music | zh, en, ja, ko, es | HeartMuLa-oss-3B with HeartCodec-oss | GGUF 16/Q8 |
+| **midashenglm_gen** | Music, SFX | auto | MiDashengLM-Gen structured-prompt generation for speech, music, sound effects, and ambience | GGUF F32/Q8 |
 | **minimax_h3** | Video, Music, TTS/Dialogue | auto | MiniMax-H3 Q4_K with optional INT8 ConvRot DiT | GGUF Q4/INT8 |
 | **minimax_music3** | Music | auto | MiniMax Music 3 text-to-music generation with lyrics conditioning | GGUF Q4/Q8 |
 | **stable_audio** | Music, SFX, Edit | en | Stable Audio 3 Small Music, Stable Audio 3 Small SFX, Stable Audio 3 Medium | GGUF 16/Q8 |
@@ -142,8 +146,13 @@ Community model ports live under `community_models` to make the ownership bounda
 
 | Family | Task | Lang | Runtime | Contributor | What They Added |
 |---|---|---|---|---|---|
+| **audio8_asr** | ASR | en, zh, yue, ja, ko, fr, de | GGUF Q8, Safetensors | [@gqf2008](https://github.com/gqf2008) | [Audio8-ASR-0.1B](docs/community_models/audio8_asr.md) compact multilingual autoregressive ASR reusing the Qwen3-ASR encoder with an MLP-tower adapter and an 8-layer Qwen2-style decoder (CC-BY-NC, local conversion only) |
+| **audio8_tts** | TTS, Clone | auto, yue, zh, nl, en, fr, de, it, ja, ko, pl, es | GGUF Q8, Stream | [@jasonchen31](https://github.com/jasonchen31) | [Audio8 TTS Preview 0.6B](docs/community_models/audio8_tts.md) DualAR multilingual TTS and zero-shot voice cloning with a Qwen backbone and neural codec |
+| **chatterbox_turbo** | TTS (testing) | en | GGUF 16/Q8 | [@pannagaps](https://github.com/pannagaps) | [Chatterbox Turbo](docs/community_models/chatterbox_turbo.md) distilled 350M GPT2 T3 backbone + 2-step meanflow S3Gen decoder; built-in voice |
+| **echo_tts** | Clone | en | GGUF 16/Q8 | [@5uck1ess](https://github.com/5uck1ess) | [Echo-TTS](docs/community_models/echo_tts.md) 44.1 kHz zero-shot voice cloning with EchoDiT latents and Fish S1-DAC decoding |
 | **f5_tts** | TTS, Clone | en, ar (Habibi) | GGUF | [@tareko](https://github.com/tareko) | [F5-TTS](docs/community_models/f5_tts.md) flow-matching DiT synthesis and voice cloning, with Habibi Arabic aliases `habibi`/`habibi_tts` |
 | **glm_tts** | TTS, Clone | zh, en | GGUF | Mirek [@mirek190](https://github.com/mirek190) | [GLM-TTS](docs/community_models/glm_tts.md) zero-shot synthesis and voice cloning support |
+| **granite5asr** | ASR | en | GGUF Q8 | [@ampersandru](https://github.com/ampersandru) | [IBM Granite Speech 5.0 470M TurboCTC](docs/community_models/granite5asr.md) ultra-fast Conformer-CTC ASR with Shaw relative positional embeddings and ByteLevel BPE |
 | **inflect_v2** | TTS | en | GGUF FP32 | Jan [@JanWerder](https://github.com/JanWerder) | [Inflect Micro v2 and Nano v2](docs/community_models/inflect_v2.md) native offline synthesis |
 | **kroko_asr** | ASR | de, en, es, fr, it, he, nl, pt, sv, tr | Safetensors, GGUF Q8 | Mirek [@mirek190](https://github.com/mirek190) | [Kroko Community ASR](docs/community_models/kroko_asr.md) native offline/streaming Zipformer2/RNN-T transcription with word timestamps |
 | **minimax_h3** | Video, Music, TTS/Dialogue | auto | GGUF Q4/INT8 | [@0xShug0](https://github.com/0xShug0) | [MiniMax-H3](docs/community_models/minimax_h3.md) text-to-audio/video generation with Q4_K and optional INT8 ConvRot DiT |
@@ -154,7 +163,9 @@ Community model ports live under `community_models` to make the ownership bounda
 | **outetts** | TTS, Clone | en, ar, zh, nl, fr, de, it, ja, ko, lt, ru, es, pt, be, bn, ka, hu, lv, fa, pl, sw, ta, uk | GGUF | Mirek [@mirek190](https://github.com/mirek190) | Llama-OuteTTS-1.0-1B TTS and voice cloning support |
 | **parakeet_tdt** | ASR | auto, bg, cs, da, de, el, en, es, et, fi, fr, hr, hu, it, lt, lv, mt, nl, pl, pt, ro, ru, sk, sl, sv, uk | GGUF F32/16/Q8, Stream | [@dleiferives](https://github.com/dleiferives) | [Parakeet-TDT 0.6B v3](docs/community_models/parakeet_tdt.md) offline, long-form, and buffered-streaming ASR support |
 | **sense_asr** | ASR | auto, zh, en, yue, ja, ko, pt, ru, es, it, fr, de, nl, pl, tr, ar, hi, vi, th, id, ms, fa, nospeech | GGUF Q8, Stream | Jason Chen [@jasonchen31](https://github.com/jasonchen31), [@LauraGPT](https://github.com/LauraGPT) / FunASR | [SenseVoice-Small](docs/community_models/sense_asr.md) offline/streaming SAN-M + CTC transcription with event/emotion/language tags and ITN |
+| **soprano_tts** | TTS | en | GGUF Q8, Stream | [@drzsdrtfg](https://github.com/drzsdrtfg) | [Soprano-1.1-80M](https://huggingface.co/WalkingCat/Soprano-1.1-80M-GGUF) ultra-lightweight TTS with Qwen3 LM + Vocos decoder |
 | **vietneu_tts** | TTS, Clone | vi, en | GGUF | Phuoc [@phuocnguyen90](https://github.com/phuocnguyen90) | [VieNeu-TTS-v3-Turbo](docs/community_models/vietneu_tts.md) TTS and voice cloning support |
+| **voxcpm1** | TTS, Clone | zh, en, ja, ko | GGUF Q8, Stream | [@jasonchen31](https://github.com/jasonchen31) | [VoxCPM1](docs/community_models/voxcpm1.md) tokenizer-free 0.5B TTS with 16 kHz output, streaming, and continuation-mode voice cloning |
 
 ## Docker
 
@@ -220,8 +231,17 @@ model notes, and frontend development instructions.
 
 ## Prebuilt Binaries
 
-- **Windows (CUDA / CPU):** official packages on the [Releases page](https://github.com/0xShug0/audio.cpp/releases).
-- **Windows (HIP/ROCm, AMD GPUs):** community-maintained packages with the ROCm runtime bundled — no HIP SDK installation required. Published from [@IIIIIllllIIIIIlllll's fork Releases](https://github.com/IIIIIllllIIIIIlllll/audio.cpp/releases) in two tracks: ROCm 6.4 (full coverage incl. RX 7600 / gfx1102) and ROCm 7.1 (recommended for RDNA4). Version numbers follow the upstream releases; see [docs/build/windows-hip-distribution.md](docs/build/windows-hip-distribution.md) for details.
+Official packages for every release are attached to the [Releases page](https://github.com/0xShug0/audio.cpp/releases):
+
+| Platform | Backends |
+|---|---|
+| Windows x64 | CPU, Vulkan, CUDA (12.4 / 13.3) |
+| Ubuntu x64 | CPU, Vulkan |
+| macOS (arm64 / x64) | Metal |
+
+The Windows CUDA packages ship the CUDA runtime in a separate `cudart` archive. Extract it next to the binaries so the CUDA backend can load `ggml-cuda.dll` and the CUDA runtime DLLs (`cudart`, cuBLAS, cuFFT).
+
+- **Windows (HIP/ROCm, AMD GPUs):** community-maintained packages with the ROCm runtime bundled, so no HIP SDK installation is required. Published from [@IIIIIllllIIIIIlllll's fork Releases](https://github.com/IIIIIllllIIIIIlllll/audio.cpp/releases) in two tracks: ROCm 6.4 (full coverage incl. RX 7600 / gfx1102) and ROCm 7.1 (recommended for RDNA4). Version numbers follow the upstream releases; see [docs/build/windows-hip-distribution.md](docs/build/windows-hip-distribution.md) for details.
 
 ## Build
 
@@ -639,6 +659,7 @@ The server exposes:
 - `GET /v1/models`
 - `POST /v1/audio/speech`
 - `POST /v1/audio/transcriptions`
+- `POST /v1/audio/alignments`
 - `POST /v1/tasks/run`
 
 More server examples are in [app/server/README.md](app/server/README.md).

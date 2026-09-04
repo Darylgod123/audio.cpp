@@ -97,6 +97,10 @@ Set top-level `"lazy_load": true` to register all configured model ids at startu
 
 Set top-level `"max_loaded_models"` to bound how many models are resident in memory at once. When a request needs a model that is not loaded and the limit is already reached, the server first unloads the least recently used idle model (freeing VRAM on GPU backends) and reloads it on its own next request. `1` enforces a single loaded model at a time, which is the practical choice when each model alone nearly fills the device. Higher values keep that many most recently used models warm. The default `0` disables the limit. A model that is mid-inference is never unloaded; if the limit is reached and every loaded model is busy, the request fails with `503` so the client can retry. With more non-lazy models configured than the limit allows, startup loads the first `max_loaded_models` of them and defers the rest to their first request. The equivalent command-line option is `--max-loaded-models <n>`.
 
+Set top-level `"idle_unload_ms"` to have the server unload every resident model after it has gone that long without any model load/run. The next request reloads lazily; a model mid-inference is never unloaded. This complements `max_loaded_models`: that bounds peak residency, this frees memory during quiet periods. Defaults to `0` (disabled). The `--idle-unload-ms <ms>` command-line flag overrides the config value.
+
+Set top-level `"min_free_memory_mb"` to refuse a model load when the host or the GPU backend does not have that much free memory left after the estimated footprint of the new model. The estimate covers only what the loader will actually read: a single-file model's weights, the one GGUF a model directory selects (`model.gguf` or the sole `*.gguf`), or a full safetensors/HF checkpoint tree, plus any session auxiliary files. A directory holding several GGUFs with no `model.gguf` is ambiguous, so the guard makes no estimate there: the loader's own error surfaces for spec-driven loads, and family-specific layouts the estimator cannot resolve load unguarded (the server logs that the guard skipped the model). The estimate is scaled by a runtime overhead factor plus a fixed floor. When the check fails, the request returns HTTP 503 with `insufficient_memory`; the client may retry later. Defaults to `0`, which disables the guard entirely so existing deployments are unaffected; set a positive value to opt in. The `--min-free-memory-mb <mb>` command-line flag overrides the config value.
+
 Set per-model `"default_request_options"` to apply request-option defaults to every request for that model. Values supplied by the actual request body override these defaults.
 
 Set top-level `"max_request_body_bytes"` to bound the largest HTTP request body buffered in host RAM before routing. This protects endpoints that accept JSON or audio uploads from unbounded `Content-Length` claims. The default is `2147483648` bytes (2 GiB). Raise or lower it to match the largest upload your deployment intends to accept. Values above `2^53 - 1` are rejected because this config parser stores JSON numbers as doubles.
@@ -375,6 +379,20 @@ curl -N http://127.0.0.1:8080/v1/audio/transcriptions \
 The stream emits `transcript.text.delta` events, one final `transcript.text.done` event containing the full transcript, then `data: [DONE]`.
 
 Note that `stream=true` streams the *output* of an already-uploaded file: the whole recording is sent first, and the deltas describe decoding it. It shortens time-to-first-token on long audio, but nothing can appear while the speaker is still talking. For that, use the live endpoint below.
+
+### `POST /v1/audio/alignments`
+
+Multipart forced-alignment request using uploaded audio bytes and a known transcript. Use this when the server cannot see the client's local audio path, for example when the server is remote or running in Docker.
+
+```bash
+curl http://127.0.0.1:8080/v1/audio/alignments \
+  -F model=qwen3-align \
+  -F language=en \
+  -F text='The task has completed successfully.' \
+  -F file=@/path/to/input.wav
+```
+
+`file`, `model`, and `text` are required; `language` is optional. The selected model must be configured with `task: "align"` and `mode: "offline"`. Uploaded WAV bytes are decoded in memory and are not written to a temporary file. The response includes word timestamps in seconds plus sample offsets.
 
 ### `POST /v1/audio/transcriptions/live`
 

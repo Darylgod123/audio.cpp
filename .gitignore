@@ -19,6 +19,7 @@ __pycache__/
 /tests/omnivoice/outputs/
 /unittests/
 /models/
+/granite5asr/
 /reference/
 /resources/
 /patches/
@@ -46,3 +47,8 @@ tools/models/OmniVoice-GGUF/omnivoice-q8_0.gguf
 tools/models/Qwen3-ASR-0.6B-GGUF/.audiocpp-package-qwen3_asr_0_6b_q8_0.json
 tools/models/Qwen3-ASR-0.6B-GGUF/qwen3-asr-0.6b-q8_0.gguf
 /tools/models
+
+audio-vtest-*
+
+# local-only: 0.1B Falcon-H1 detailed port plan (keep local, not upstream)
+docs/FALCON_H1_0.1B_PORT_PLAN.md
