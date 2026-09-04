@@ -45,3 +45,4 @@ tools/models/OmniVoice-GGUF/.audiocpp-package-omnivoice_q8_0.json
 tools/models/OmniVoice-GGUF/omnivoice-q8_0.gguf
 tools/models/Qwen3-ASR-0.6B-GGUF/.audiocpp-package-qwen3_asr_0_6b_q8_0.json
 tools/models/Qwen3-ASR-0.6B-GGUF/qwen3-asr-0.6b-q8_0.gguf
+/tools/models
