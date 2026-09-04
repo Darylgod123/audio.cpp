@@ -30,16 +30,11 @@
       }
     },
     {
-      "id": "qwen3_asr_0_6b_q8_0",
-      "family": "qwen3_asr",
-      "path": "tools/models/Qwen3-ASR-0.6B-GGUF/qwen3-asr-0.6b-q8_0.gguf",
+      "id": "nemotron_asr_q8_0",
+      "family": "nemotron_asr",
+      "path": "tools/models/Nemotron-3.5-ASR-Streaming-0.6B-GGUF/nemotron-3.5-asr-streaming-0.6b-q8_0.gguf",
       "task": "asr",
-      "mode": "streaming",
-      "session_options": {
-        "qwen3_asr.weight_type": "q8_0",
-        "qwen3_forced_aligner.weight_type": "q8_0",
-        "qwen3_tts.mem_saver": true
-      }
+      "mode": "offline"
     }
   ]
 }
